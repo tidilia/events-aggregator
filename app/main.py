@@ -22,10 +22,7 @@ async def lifespan(app: FastAPI):
     events_repo = EventsRepository(session)
     sync_repo = SyncRepository(session)
 
-    base_url = os.getenv(
-        "EVENTS_PROVIDER_URL",
-        "https://events-provider.dev-2.python-labs.ru/api/events/"
-    )
+    base_url = os.getenv("EVENTS_PROVIDER_URL")
 
     api_key = os.getenv("LMS_API_KEY")
 

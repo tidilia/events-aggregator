@@ -24,6 +24,11 @@ class EventsProviderClient:
             params=params,
             headers=headers
         )
+        
+        print("STATUS:", response.status_code)
+
+        if response.status_code != 200:
+            print("ERROR BODY:", await response.text())
 
         response.raise_for_status()
         return response.json()
