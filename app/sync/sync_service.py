@@ -2,6 +2,16 @@ from datetime import datetime
 from app.sync.paginator import EventsPaginator
 
 
+class SyncService:
+    def __init__(self, client, repo, sync_fn):
+        self.client = client
+        self.repo = repo
+        self.sync_fn = sync_fn
+
+    async def sync_once(self):
+        await self.sync_fn(self.client, self.repo)
+
+
 async def sync_events(client, events_repo, sync_repo):
     last_changed_at = await sync_repo.get_last_changed_at()
 
