@@ -41,6 +41,7 @@ async def lifespan(app: FastAPI):
         await session.close()
 
 
-app = FastAPI(lifespan=lifespan)
+# app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.include_router(api_router, prefix="/api")
