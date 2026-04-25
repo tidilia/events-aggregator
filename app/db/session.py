@@ -6,7 +6,6 @@ from typing import AsyncGenerator
 
 
 DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
-# DATABASE_URL = "postgresql+asyncpg://events_user:1234@localhost:5432/events_db"
 
 engine = create_async_engine(
     DATABASE_URL,
