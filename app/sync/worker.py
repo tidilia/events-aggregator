@@ -1,5 +1,5 @@
 import asyncio
-from app.services.sync import sync_events
+from app.sync.sync_service import sync_events
 
 
 async def sync_loop(client, events_repo, sync_repo):
