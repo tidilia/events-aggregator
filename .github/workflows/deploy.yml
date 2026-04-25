@@ -41,6 +41,7 @@ jobs:
           curl -X POST https://lms.python-labs.ru/api/deploy-requests \
             -H "Content-Type: application/json" \
             -H "X-API-Key: ${{ secrets.LMS_API_KEY }}" \
+            -H "EVENTS_PROVIDER_URL: ${{ secrets.EVENTS_PROVIDER_URL }}" \
             -d '{
               "image":"ghcr.io/${{ github.repository }}:${{ github.sha }}",
               "repository":"${{ github.repository }}"
