@@ -99,7 +99,11 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
-#DATABASE_URL = "postgresql+asyncpg://events_user:1234@db:5432/events_db"
+DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace(
+        "postgres://", "postgresql+asyncpg://", 1)
+# DATABASE_URL = "postgresql+asyncpg://events_user:1234@db:5432/events_db"
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 
