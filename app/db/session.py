@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator
 
 
+# DATABASE_URL = "postgresql+asyncpg://events_user:1234@localhost:5432/events_db"
+
 DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace(
