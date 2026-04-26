@@ -37,8 +37,6 @@ async def get_events(
     if page > 1:
         prev_url = build_url(base_url, page - 1, page_size, date_from)
         
-    print(prev_url)
-    print(page)
 
     return {
         "count": total,

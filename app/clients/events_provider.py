@@ -58,7 +58,8 @@ class EventsProviderClient:
         return response.json()
     
     async def unregister(self, event_id: str, ticket_id: str):
-        await self.http_client.delete(
+        await self.http_client.request(
+            "DELETE",
             f"{self.base_url}{event_id}/unregister/",
             json={"ticket_id": ticket_id},
             headers={"x-api-key": self.api_key}
