@@ -1,7 +1,9 @@
 import asyncio
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 
 from app.api.router import api_router
 
@@ -45,3 +47,16 @@ app = FastAPI(lifespan=lifespan)
 #app = FastAPI()
 
 app.include_router(api_router, prefix="/api")
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    if request.url.path.startswith("/api/tickets"):
+        return JSONResponse(
+            status_code=400,
+            content={"detail": exc.errors()},
+        )
+
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors()},
+    )
