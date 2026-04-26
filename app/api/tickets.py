@@ -5,7 +5,7 @@ from app.services.tickets import TicketsService
 
 router = APIRouter()
 
-@router.post("/tickets/", response_model=RegisterResponse)
+@router.post("/tickets", response_model=RegisterResponse)
 async def create_ticket(
     payload: RegisterRequest,
     service: TicketsService = Depends(get_tickets_service)

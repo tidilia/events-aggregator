@@ -63,7 +63,7 @@ async def get_events(
         ]
     }
     
-@router.get("/events/{event_id}/seats/")
+@router.get("/events/{event_id}/seats")
 async def get_event_seats(
     event_id: str,
     service: SeatsService = Depends(get_seats_service)
@@ -71,7 +71,7 @@ async def get_event_seats(
     return await service.get_seats(event_id)
 
 
-@router.get("/events/{event_id}/")
+@router.get("/events/{event_id}")
 async def get_event(
     event_id: str,
     service: EventsService = Depends(get_events_service)
