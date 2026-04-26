@@ -103,7 +103,7 @@ DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace(
         "postgres://", "postgresql+asyncpg://", 1)
-#DATABASE_URL = "postgresql+asyncpg://events_user:1234@localhost:5432/events_db"
+# DATABASE_URL = "postgresql+asyncpg://events_user:1234@localhost:5432/events_db"
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 

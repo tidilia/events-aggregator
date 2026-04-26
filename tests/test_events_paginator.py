@@ -1,5 +1,5 @@
 import pytest
-
+from datetime import datetime, timezone
 from app.sync.paginator import EventsPaginator
 
 
@@ -26,7 +26,7 @@ class MockClient:
 async def test_events_paginator_iteration():
     client = MockClient()
 
-    paginator = EventsPaginator(client, changed_at="2000-01-01")
+    paginator = EventsPaginator(client, changed_at=datetime(2000, 1, 1, tzinfo=timezone.utc))
 
     results = []
 

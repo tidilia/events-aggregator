@@ -18,7 +18,6 @@ from httpx import AsyncClient
 base_url=os.getenv("EVENTS_PROVIDER_URL")
 api_key =os.getenv("LMS_API_KEY")
 
-
 def get_events_client() -> EventsProviderClient:
     return EventsProviderClient(
         base_url=base_url,
