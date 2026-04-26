@@ -46,3 +46,7 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id', name=op.f('events_pkey'))
     )
     # ### end Alembic commands ###
+    
+def downgrade() -> None:
+    op.drop_table('events')
+    op.drop_table('sync_metadata')

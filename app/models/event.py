@@ -8,14 +8,14 @@ class Event(Base):
     id = Column(String, primary_key=True)
 
     name = Column(String, nullable=False)
-    event_time = Column(DateTime, nullable=False)
-    registration_deadline = Column(DateTime, nullable=False)
+    event_time = Column(DateTime(timezone=True), nullable=False)
+    registration_deadline = Column(DateTime(timezone=True), nullable=False)
     status = Column(String, nullable=False)
     number_of_visitors = Column(Integer, nullable=False)
 
-    changed_at = Column(DateTime, nullable=False)
-    created_at = Column(DateTime, nullable=False)
-    status_changed_at = Column(DateTime, nullable=False)
+    changed_at = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), nullable=False)
+    status_changed_at = Column(DateTime(timezone=True), nullable=False)
 
     # place (денормализовано)
     place_id = Column(String)
@@ -23,5 +23,5 @@ class Event(Base):
     place_city = Column(String)
     place_address = Column(String)
     place_seats_pattern = Column(String)
-    place_changed_at = Column(DateTime)
-    place_created_at = Column(DateTime)
+    place_changed_at = Column(DateTime(timezone=True))
+    place_created_at = Column(DateTime(timezone=True))

@@ -1,37 +1,38 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.dialects.postgresql import insert
-from app.models.event import Event
+from sqlalchemy import select, func
+from app.models.event import Event as EventModel
 
 
 class EventsRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def upsert_event(self, event: dict):
-        place = event["place"]
+    async def upsert_event(self, event: EventModel):
+        place = event.place
 
-        stmt = insert(Event).values(
-            id=event["id"],
-            name=event["name"],
-            event_time=event["event_time"],
-            registration_deadline=event["registration_deadline"],
-            status=event["status"],
-            number_of_visitors=event["number_of_visitors"],
-            changed_at=event["changed_at"],
-            created_at=event["created_at"],
-            status_changed_at=event["status_changed_at"],
+        stmt = insert(EventModel).values(
+            id=event.id,
+            name=event.name,
+            event_time=event.event_time,
+            registration_deadline=event.registration_deadline,
+            status=event.status,
+            number_of_visitors=event.number_of_visitors,
+            changed_at=event.changed_at,
+            created_at=event.created_at,
+            status_changed_at=event.status_changed_at,
 
-            place_id=place["id"],
-            place_name=place["name"],
-            place_city=place["city"],
-            place_address=place["address"],
-            place_seats_pattern=place["seats_pattern"],
-            place_changed_at=place["changed_at"],
-            place_created_at=place["created_at"],
+            place_id=place.id,
+            place_name=place.name,
+            place_city=place.city,
+            place_address=place.address,
+            place_seats_pattern=place.seats_pattern,
+            place_changed_at=place.changed_at,
+            place_created_at=place.created_at,
         )
 
         stmt = stmt.on_conflict_do_update(
-            index_elements=[Event.id],
+            index_elements=[EventModel.id],
             set_={
                 "name": stmt.excluded.name,
                 "event_time": stmt.excluded.event_time,
@@ -53,3 +54,30 @@ class EventsRepository:
 
         await self.session.execute(stmt)
         await self.session.commit()
+        
+    async def get_events(self, date_from, limit, offset):
+        stmt = select(EventModel)
+
+        if date_from:
+            stmt = stmt.where(EventModel.event_time >= date_from)
+
+        stmt = stmt.order_by(EventModel.event_time.asc())
+        stmt = stmt.limit(limit).offset(offset)
+
+        result = await self.session.execute(stmt)
+        return result.scalars().all()
+    
+    async def get_event_by_id(self, event_id: str):
+        stmt = select(EventModel).where(EventModel.id == event_id)
+        result = await self.session.execute(stmt)
+        event = result.scalar_one_or_none()
+        return event
+    
+    async def count_events(self, date_from):
+        stmt = select(func.count(EventModel.id))
+
+        if date_from:
+            stmt = stmt.where(EventModel.event_time >= date_from)
+
+        result = await self.session.execute(stmt)
+        return result.scalar()

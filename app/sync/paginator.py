@@ -1,5 +1,6 @@
+from datetime import datetime
 class EventsPaginator:
-    def __init__(self, client, changed_at: str):
+    def __init__(self, client, changed_at: datetime):
         self.client = client
         self.changed_at = changed_at
         self.cursor = None
@@ -15,7 +16,7 @@ class EventsPaginator:
 
         if not self.buffer:
             response = await self.client.events(
-                changed_at=self.changed_at,
+                changed_at=self.changed_at.date().isoformat(),
                 cursor=self.cursor
             )
 
