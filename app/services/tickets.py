@@ -29,7 +29,7 @@ class TicketsService:
         if not event:
             raise EventNotFoundError(event_id)
         
-        if event.status != EventStatus.PUBLISHED:
+        if event.status != EventStatus.published:
             raise EventNotPublishedError
 
         

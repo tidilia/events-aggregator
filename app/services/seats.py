@@ -13,7 +13,7 @@ class SeatsService:
         if not event:
             raise EventNotFoundError(event_id)
         
-        if event.status != EventStatus.PUBLISHED:
+        if event.status != EventStatus.published:
             raise EventNotPublishedError
         
         cached = seats_cache.get(event_id)
