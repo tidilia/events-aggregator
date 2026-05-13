@@ -1,7 +1,7 @@
 from enum import Enum
 
 class EventStatus(str, Enum):
-    PUBLISHED = "published"
-    NEW = "new"
-    REGISTRATION_CLOSED = "registration_closed"
-    FINISHED = "finished"
+    published = "published"
+    new = "new"
+    registration_closed = "registration_closed"
+    finished = "finished"
