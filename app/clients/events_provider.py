@@ -24,6 +24,8 @@ class EventsProviderClient:
             params=params,
             headers=headers
         )
+        
+        print(response.json()["results"])
 
         response.raise_for_status()
         return response.json()

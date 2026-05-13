@@ -98,7 +98,6 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-
 DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
 
 if DATABASE_URL.startswith("postgres://"):

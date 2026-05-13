@@ -25,7 +25,6 @@ async def sync_events(client, events_repo, sync_repo):
     
 
     async for raw_event in paginator:
-        print("raw event status:", raw_event["status"])
         event = EventSchema.model_validate(raw_event)
         await events_repo.upsert_event(event)
 
