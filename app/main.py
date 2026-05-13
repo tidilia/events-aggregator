@@ -14,7 +14,6 @@ from app.repositories.events import EventsRepository
 from app.repositories.sync import SyncRepository
 from app.sync.worker import sync_loop
 
-import os
 import httpx
 
 
