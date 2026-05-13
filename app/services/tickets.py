@@ -58,7 +58,7 @@ class TicketsService:
             "created_at": datetime.now(timezone.utc)
         }
 
-        await self.tickets_repo.save_ticket(ticket_data)
+        await self.tickets_repo.save_ticket(ticket_data, payload)
 
         return result
     

@@ -5,9 +5,15 @@ class TicketsRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def save_ticket(self, ticket_data: dict):
+    async def save_ticket(self, ticket_data: dict, payload: dict):
         ticket = Ticket(**ticket_data)
+        # outbox = Outbox(
+        #     id = str(uuid4()),
+        #     payload = payload,
+        #     ticket_id = ticket.id
+        # )
         self.session.add(ticket)
+        # self.session.add(outbox)
         await self.session.commit()
         
     async def get(self, ticket_id: str) -> Ticket | None:

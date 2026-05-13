@@ -1,6 +1,5 @@
-from sqlalchemy import Column, String, DateTime, Integer, Enum
+from sqlalchemy import Column, String, DateTime, Integer
 from app.db.base import Base
-from app.models.enums import EventStatus
 
 class Event(Base):
     __tablename__ = "events"
@@ -10,7 +9,7 @@ class Event(Base):
     name = Column(String, nullable=False)
     event_time = Column(DateTime(timezone=True), nullable=False)
     registration_deadline = Column(DateTime(timezone=True), nullable=False)
-    status = Column(Enum(EventStatus), nullable=False)
+    status = Column(String, nullable=False)
     number_of_visitors = Column(Integer, nullable=False)
 
     changed_at = Column(DateTime(timezone=True), nullable=False)
