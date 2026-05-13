@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from app.exceptions import EventNotFoundError
 
 class EventsService:
     def __init__(self, repo):
@@ -21,6 +21,6 @@ class EventsService:
         event = await self.repo.get_event_by_id(event_id)
 
         if not event:
-            raise HTTPException(status_code=404, detail="Event not found")
+            raise EventNotFoundError(event_id)
 
         return event

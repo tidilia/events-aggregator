@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Query, Request, Depends
+from fastapi import APIRouter, Query, Request, Depends, HTTPException
 from datetime import datetime
 from app.schemas.event import EventsListResponse
 from app.utils.pagination import build_url
 from app.deps import get_events_service, get_seats_service
 from app.services.events import EventsService
 from app.services.seats import SeatsService
-
+from app.exceptions import EventNotFoundError
 
 router = APIRouter()
 
@@ -74,9 +74,9 @@ async def get_event(
     event_id: str,
     service: EventsService = Depends(get_events_service)
 ):
-    event = await service.get_event(event_id)
-
-    return {
+    try:
+        event = await service.get_event(event_id)
+        return {
         "id": event.id,
         "name": event.name,
         "place": {
@@ -91,4 +91,10 @@ async def get_event(
         "status": event.status,
         "number_of_visitors": event.number_of_visitors,
     }
+
+    except EventNotFoundError as e:
+        raise HTTPException(
+            status_code=404,
+            detail=str(e),
+        ) from e
     

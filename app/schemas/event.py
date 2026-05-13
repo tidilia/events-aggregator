@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, EmailStr
 from datetime import datetime
 from typing import Optional, List
+from app.models.enums import EventStatus
 
 class Place(BaseModel):
     id: str
@@ -18,7 +19,7 @@ class EventSchema(BaseModel):
     name: str
     event_time: datetime
     registration_deadline: datetime
-    status: str
+    status: EventStatus
     number_of_visitors: int
     changed_at: datetime
     created_at: datetime

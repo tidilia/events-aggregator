@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
 from app.api.router import api_router
+from app.config import EVENTS_PROVIDER_URL, LMS_API_KEY
 
 from app.db.session import SessionLocal
 from app.clients.events_provider import EventsProviderClient
@@ -24,9 +25,9 @@ async def lifespan(app: FastAPI):
     events_repo = EventsRepository(session)
     sync_repo = SyncRepository(session)
 
-    base_url = os.getenv("EVENTS_PROVIDER_URL")
+    base_url = EVENTS_PROVIDER_URL
 
-    api_key = os.getenv("LMS_API_KEY")
+    api_key = LMS_API_KEY
 
     client = EventsProviderClient(
         base_url=base_url, api_key=api_key, http_client=httpx.AsyncClient())
@@ -44,7 +45,6 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-#app = FastAPI()
 
 app.include_router(api_router, prefix="/api")
 

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
 from app.schemas.event import RegisterRequest, RegisterResponse
 from app.deps import get_tickets_service
 from app.services.tickets import TicketsService
+from app.exceptions import EventNotFoundError, EventNotPublishedError, RegistrationDeadlinePassedError, SeatNotAvailableError, TicketNotFoundError
 
 router = APIRouter()
 
@@ -10,13 +11,21 @@ async def create_ticket(
     payload: RegisterRequest,
     service: TicketsService = Depends(get_tickets_service)
 ):
-    result = await service.register(payload)
-    return result
+    try:
+        result = await service.register(payload)
+        return result
+    except (EventNotPublishedError, RegistrationDeadlinePassedError, SeatNotAvailableError) as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    except EventNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
 
 @router.delete("/tickets/{ticket_id}", status_code=status.HTTP_200_OK)
 async def delete_ticket(
     ticket_id: str,
     service: TicketsService = Depends(get_tickets_service)
 ):
-    result = await service.unregister(ticket_id)
-    return result 
+    try:
+        result = await service.unregister(ticket_id)
+        return result 
+    except TicketNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e

@@ -2,6 +2,7 @@ import os
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import EVENTS_PROVIDER_URL, LMS_API_KEY
 from app.db.session import get_db
 from app.clients.events_provider import EventsProviderClient
 from app.repositories.events import EventsRepository
@@ -15,8 +16,8 @@ from app.sync.sync_service import SyncService, sync_events
 from app.usecases.sync import SyncUsecase
 from httpx import AsyncClient
 
-base_url=os.getenv("EVENTS_PROVIDER_URL")
-api_key =os.getenv("LMS_API_KEY")
+base_url= EVENTS_PROVIDER_URL
+api_key = LMS_API_KEY
 
 def get_events_client() -> EventsProviderClient:
     return EventsProviderClient(

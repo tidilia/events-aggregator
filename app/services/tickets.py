@@ -1,5 +1,6 @@
-from fastapi import HTTPException
 from datetime import datetime, timezone
+from app.models.enums import EventStatus
+from app.exceptions import EventNotFoundError, EventNotPublishedError, RegistrationDeadlinePassedError, SeatNotAvailableError, TicketNotFoundError  
 
 class TicketsService:
     def __init__(self, seats_service, client, events_repo, users_repo, tickets_repo):
@@ -26,19 +27,19 @@ class TicketsService:
         user = await self.get_or_create_user(data)
 
         if not event:
-            raise HTTPException(status_code=404, detail="Event not found")
+            raise EventNotFoundError(event_id)
         
-        if event.status != "published":
-            raise HTTPException(status_code=400, detail="Event is not published")
+        if event.status != EventStatus.PUBLISHED:
+            raise EventNotPublishedError
 
         
         if event.registration_deadline < datetime.now(timezone.utc):
-            raise HTTPException(status_code=400, detail="Registration deadline has passed")
+            raise RegistrationDeadlinePassedError
 
         
         seats = await self.seats_service.get_seats(event_id)
         if data.seat not in seats["available_seats"]:
-            raise HTTPException(status_code=400, detail="Seat is not available")
+            raise SeatNotAvailableError
         
         payload = {
             "first_name": data.first_name,
@@ -65,7 +66,7 @@ class TicketsService:
         ticket = await self.tickets_repo.get(ticket_id)
 
         if not ticket:
-            raise HTTPException(status_code=404, detail="Ticket not found")
+            raise TicketNotFoundError(ticket_id)
 
         await self.client.unregister(ticket.event_id, ticket_id)
         await self.tickets_repo.delete(ticket_id)

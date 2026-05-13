@@ -1,5 +1,5 @@
 import httpx
-
+from urllib.parse import urljoin
 
 class EventsProviderClient:
     def __init__(self, base_url: str, api_key: str, http_client: httpx.AsyncClient):
@@ -35,7 +35,7 @@ class EventsProviderClient:
             }
     
         response = await self.http_client.get(
-            f"{self.base_url}{event_id}/seats/",
+            urljoin(self.base_url, f"{event_id}/seats/"),
             headers=headers
         )
         response.raise_for_status()
@@ -49,7 +49,7 @@ class EventsProviderClient:
             }
     
         response = await self.http_client.post(
-            f"{self.base_url}{event_id}/register/",
+            urljoin(self.base_url, f"{event_id}/register/"),
             json=payload,
             headers=headers
         )
@@ -60,7 +60,7 @@ class EventsProviderClient:
     async def unregister(self, event_id: str, ticket_id: str):
         await self.http_client.request(
             "DELETE",
-            f"{self.base_url}{event_id}/unregister/",
+            urljoin(self.base_url, f"{event_id}/unregister/"),
             json={"ticket_id": ticket_id},
             headers={"x-api-key": self.api_key}
         )
