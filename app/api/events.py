@@ -5,7 +5,7 @@ from app.utils.pagination import build_url
 from app.deps import get_events_service, get_seats_service
 from app.services.events import EventsService
 from app.services.seats import SeatsService
-from app.exceptions import EventNotFoundError
+from app.exceptions import EventNotFoundError, EventNotPublishedError
 
 router = APIRouter()
 
@@ -66,7 +66,19 @@ async def get_event_seats(
     event_id: str,
     service: SeatsService = Depends(get_seats_service)
 ):
-    return await service.get_seats(event_id)
+    try:
+        result = await service.get_seats(event_id)
+        return result  
+    except EventNotFoundError as e:
+        raise HTTPException(
+            status_code=404,
+            detail=str(e),
+        ) from e
+    except EventNotPublishedError as e: 
+        raise HTTPException(
+            status_code=400,
+            detail=str(e),
+        ) from e
 
 
 @router.get("/events/{event_id}")

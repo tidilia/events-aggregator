@@ -1,5 +1,6 @@
 from app.services.seats_cache import seats_cache
-from fastapi import HTTPException, status
+from app.models.enums import EventStatus
+from app.exceptions import EventNotFoundError, EventNotPublishedError
 
 class SeatsService:
     def __init__(self, repo, client):
@@ -10,16 +11,10 @@ class SeatsService:
         event = await self.repo.get_event_by_id(event_id)
         
         if not event:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Event with id {event_id} not found"
-            )
+            raise EventNotFoundError(event_id)
         
-        if event.status != "published":
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Event with id {event_id} is not published"
-            )
+        if event.status != EventStatus.PUBLISHED:
+            raise EventNotPublishedError
         
         cached = seats_cache.get(event_id)
         if cached:
