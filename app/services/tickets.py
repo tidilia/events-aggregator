@@ -24,6 +24,7 @@ class TicketsService:
 
     async def register(self, data):
         key = data.idempotency_key 
+        print ("key: ", key)
         if key:
             existing = await self.tickets_repo.get_by_idempotency_key_with_user(key)
             if existing:
@@ -33,6 +34,7 @@ class TicketsService:
                     or existing.user.email != data.email
                 ):
                     raise IdempotencyConflictError
+                print("existing: ", existing)
                 return {"ticket_id": existing.id}
                 
         event_id = data.event_id
