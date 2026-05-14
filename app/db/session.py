@@ -1,9 +1,7 @@
 import os
-
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator
-
 
 DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
 if DATABASE_URL.startswith("postgres://"):

@@ -1,4 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from app.models.ticket import Ticket
 from app.models.outbox import Outbox
 
@@ -23,3 +25,12 @@ class TicketsRepository:
         if ticket:
             await self.session.delete(ticket)
             await self.session.commit()
+            
+    async def get_by_idempotency_key_with_user(self, key: str):
+        result = await self.session.execute(
+            select(Ticket)
+            .options(selectinload(Ticket.user))
+            .where(Ticket.idempotency_key == key)
+        )
+
+        return result.scalar_one_or_none()

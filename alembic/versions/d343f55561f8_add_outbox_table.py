@@ -22,16 +22,10 @@ def upgrade() -> None:
     op.create_table(
         "outbox",
         sa.Column("id", sa.String(), primary_key=True),
+        sa.Column("event_type", sa.String(), nullable=False),
         sa.Column("payload", sa.JSON(), nullable=False),
-        sa.Column("ticket_id", sa.String(), nullable=False),
-        sa.Column("status", sa.String(), nullable=True, server_default="pending"),
-        sa.Column("created_at", sa.DateTime(timezone=True), nullable=True),
-
-        sa.ForeignKeyConstraint(
-            ["ticket_id"],
-            ["tickets.id"],
-            name="fk_outbox_ticket"
-        ),
+        sa.Column("status", sa.String(), nullable=False, server_default="pending"),
+        sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
     )
 
 

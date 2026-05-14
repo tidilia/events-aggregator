@@ -55,6 +55,7 @@ class RegisterRequest(BaseModel):
     last_name: str
     seat: str
     email: EmailStr
+    idempotency_key: str | None = None
     
 class RegisterResponse(BaseModel):
     ticket_id: str

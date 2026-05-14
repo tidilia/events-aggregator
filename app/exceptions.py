@@ -25,3 +25,8 @@ class TicketNotFoundError(Exception):
     def __init__(self, ticket_id: int):
         self.ticket_id = ticket_id
         super().__init__(f"Ticket {ticket_id} not found")
+        
+class IdempotencyConflictError(Exception):
+    """Idempotency key conflict: same key used with different request payload."""
+    def __init__(self, message: str = "Idempotency key conflict"):
+        super().__init__(message)

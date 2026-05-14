@@ -47,16 +47,27 @@ class EventsProviderClient:
         headers = {
                 "x-api-key": self.api_key
             }
-    
-        response = await self.http_client.post(
-            urljoin(self.base_url, f"{event_id}/register/"),
-            json=payload,
-            headers=headers
-        )
         
-        response.raise_for_status()
+        try:
+            response = await self.http_client.post(
+                urljoin(self.base_url, f"{event_id}/register/"),
+                json=payload,
+                headers=headers
+            )
+            response.raise_for_status()
+            return response.json()
+        except httpx.HTTPStatusError as e:
+            print("EVENTS PROVIDER ERROR:", e.response.text)
+            raise
+
+        except httpx.RequestError as e:
+            print("NETWORK ERROR:", str(e))
+            raise
         
-        return response.json()
+        # print(response)
+        # response.raise_for_status()
+        
+        # return response.json()
     
     async def unregister(self, event_id: str, ticket_id: str):
         await self.http_client.request(

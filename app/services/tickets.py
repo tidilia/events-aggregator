@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 from app.models.enums import EventStatus
-from app.exceptions import EventNotFoundError, EventNotPublishedError, RegistrationDeadlinePassedError, SeatNotAvailableError, TicketNotFoundError  
+from app.exceptions import EventNotFoundError, EventNotPublishedError, RegistrationDeadlinePassedError, SeatNotAvailableError, TicketNotFoundError, IdempotencyConflictError 
 
 class TicketsService:
     def __init__(self, seats_service, client, events_repo, users_repo, tickets_repo):
@@ -23,6 +23,18 @@ class TicketsService:
         return user
 
     async def register(self, data):
+        key = data.idempotency_key 
+        if key:
+            existing = await self.tickets_repo.get_by_idempotency_key_with_user(key)
+            if existing:
+                if (
+                    existing.event_id != data.event_id
+                    or existing.seat != data.seat
+                    or existing.user.email != data.email
+                ):
+                    raise IdempotencyConflictError
+                return {"ticket_id": existing.id}
+                
         event_id = data.event_id
         event = await self.repo.get_event_by_id(event_id)
         user = await self.get_or_create_user(data)
