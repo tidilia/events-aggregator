@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import relationship
 from app.db.base import Base
 from datetime import datetime, timezone
 
@@ -9,6 +10,7 @@ class Ticket(Base):
     idempotency_key = Column(String, unique=True, index=True, nullable=True)
     event_id = Column(String, ForeignKey("events.id"), nullable=False)
     user_id = Column(String, ForeignKey("users.id"), nullable=False)
+    user = relationship("User")
     seat = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
     
