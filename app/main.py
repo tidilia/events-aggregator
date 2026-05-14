@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
 from app.api.router import api_router
-from app.config import EVENTS_PROVIDER_URL, LMS_API_KEY
+from app.config import EVENTS_PROVIDER_URL, LMS_API_KEY, CAPASHINO_URL
 
 from app.clients.events_provider import EventsProviderClient
 from app.sync.worker import sync_loop
@@ -20,7 +20,7 @@ from app.clients.capashino import CapashinoClient
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     base_url = EVENTS_PROVIDER_URL
-    capashino_url = "https://capashino.dev-2.python-labs.ru"
+    capashino_url = CAPASHINO_URL
 
     api_key = LMS_API_KEY
     
