@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
 from app.api.router import api_router
-from app.config import EVENTS_PROVIDER_URL, LMS_API_KEY
+from app.config import EVENTS_PROVIDER_URL, LMS_API_KEY, CAPASHINO_URL
 
 from app.db.session import SessionLocal
 from app.clients.events_provider import EventsProviderClient
@@ -16,6 +16,10 @@ from app.sync.worker import sync_loop
 
 import httpx
 
+from app.workers.outbox import outbox_worker
+from app.repositories.outbox import OutboxRepository
+from app.clients.capashino import CapashinoClient
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,22 +27,32 @@ async def lifespan(app: FastAPI):
 
     events_repo = EventsRepository(session)
     sync_repo = SyncRepository(session)
+    outbox_repo = OutboxRepository(session)
 
     base_url = EVENTS_PROVIDER_URL
+    capashino_url = CAPASHINO_URL
 
     api_key = LMS_API_KEY
+    
 
     client = EventsProviderClient(
         base_url=base_url, api_key=api_key, http_client=httpx.AsyncClient())
-
-    task = asyncio.create_task(
+    capashino_client = CapashinoClient(
+        base_url=capashino_url, api_key=api_key, http_client=httpx.AsyncClient()
+    )
+    
+    sync_task = asyncio.create_task(
         sync_loop(client, events_repo, sync_repo)
+    )
+    outbox_task = asyncio.create_task(
+        outbox_worker(outbox_repo, capashino_client)
     )
 
     try:
         yield
     finally:
-        task.cancel()
+        sync_task.cancel()
+        outbox_task.cancel()
 
         await session.close()
 

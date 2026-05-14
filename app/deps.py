@@ -24,7 +24,7 @@ def get_events_client() -> EventsProviderClient:
         api_key=api_key,
         http_client=AsyncClient(),
     )
-
+    
 
 def get_events_repository(
     db: AsyncSession = Depends(get_db),

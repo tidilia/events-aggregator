@@ -1,19 +1,17 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.ticket import Ticket
+from app.models.outbox import Outbox
 
 class TicketsRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def save_ticket(self, ticket_data: dict, payload: dict):
+    async def save_ticket(self, ticket_data: dict, outbox_data: dict):
         ticket = Ticket(**ticket_data)
-        # outbox = Outbox(
-        #     id = str(uuid4()),
-        #     payload = payload,
-        #     ticket_id = ticket.id
-        # )
+        outbox = Outbox(**outbox_data)
         self.session.add(ticket)
-        # self.session.add(outbox)
+        await self.session.flush()
+        self.session.add(outbox)
         await self.session.commit()
         
     async def get(self, ticket_id: str) -> Ticket | None:

@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from uuid import uuid4
 from app.models.enums import EventStatus
 from app.exceptions import EventNotFoundError, EventNotPublishedError, RegistrationDeadlinePassedError, SeatNotAvailableError, TicketNotFoundError  
 
@@ -57,8 +58,15 @@ class TicketsService:
             "seat": data.seat,
             "created_at": datetime.now(timezone.utc)
         }
+        
+        outbox_data = {
+            "id": str(uuid4()),
+            "payload": payload,
+            "ticket_id": ticket_data["id"],
+            "created_at": ticket_data["created_at"]
+        }
 
-        await self.tickets_repo.save_ticket(ticket_data, payload)
+        await self.tickets_repo.save_ticket(ticket_data, outbox_data)
 
         return result
     
