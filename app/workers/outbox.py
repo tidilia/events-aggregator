@@ -19,7 +19,8 @@ async def outbox_worker(
                 try:
                     await capashino_client.send_notification(event.ticket_id, event.payload)
                     await uow.outbox.mark_sent(event.id)
-
+                    
+                    
                 except Exception as e:
                     print(f"[Outbox] failed event {event.id}: {e}")
 
