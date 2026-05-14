@@ -1,4 +1,5 @@
 import asyncio
+import traceback
 
 from app.clients.capashino import CapashinoClient
 from app.unit_of_work import UnitOfWork
@@ -20,9 +21,9 @@ async def outbox_worker(
                     await capashino_client.send_notification(event.ticket_id, event.payload)
                     await uow.outbox.mark_sent(event.id)
                     
-                    
                 except Exception as e:
-                    print(f"[Outbox] failed event {event.id}: {e}")
+                    print(f"[Outbox] failed event {event.id}: {repr(e)}")
+                    print(traceback.format_exc())
 
             await asyncio.sleep(POLL_INTERVAL)
         
