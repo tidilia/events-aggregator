@@ -1,12 +1,14 @@
 import asyncio
+import sentry_sdk
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
+from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 from app.api.router import api_router
-from app.config import EVENTS_PROVIDER_URL, LMS_API_KEY, CAPASHINO_URL
+from app.config import EVENTS_PROVIDER_URL, LMS_API_KEY, CAPASHINO_URL, SENTRY_DSN
 
 from app.clients.events_provider import EventsProviderClient
 from app.sync.worker import sync_loop
@@ -16,6 +18,11 @@ import httpx
 from app.workers.outbox import outbox_worker
 from app.clients.capashino import CapashinoClient
 
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    integrations=[FastApiIntegration()],
+    traces_sample_rate=1.0,
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

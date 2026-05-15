@@ -3,3 +3,4 @@ import os
 EVENTS_PROVIDER_URL = os.getenv("EVENTS_PROVIDER_URL")
 LMS_API_KEY = os.getenv("LMS_API_KEY")
 CAPASHINO_URL = os.getenv("CAPASHINO_URL")
+SENTRY_DSN = os.getenv("SENTRY_DSN")
