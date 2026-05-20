@@ -1,11 +1,13 @@
-from fastapi import APIRouter, Query, Request, Depends, HTTPException
 from datetime import datetime
-from app.schemas.event import EventsListResponse
-from app.utils.pagination import build_url
+
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+
 from app.deps import get_events_service, get_seats_service
+from app.exceptions import EventNotFoundError, EventNotPublishedError
+from app.schemas.event import EventsListResponse
 from app.services.events import EventsService
 from app.services.seats import SeatsService
-from app.exceptions import EventNotFoundError, EventNotPublishedError
+from app.utils.pagination import build_url
 
 router = APIRouter()
 
@@ -16,14 +18,12 @@ async def get_events(
     date_from: str | None = Query(None),
     page: int = 1,
     page_size: int = 20,
-    service: EventsService = Depends(get_events_service)
+    service: EventsService = Depends(get_events_service),
 ):
     parsed_date = datetime.fromisoformat(date_from) if date_from else None
 
     events, total = await service.get_events(
-        date_from=parsed_date,
-        page=page,
-        page_size=page_size
+        date_from=parsed_date, page=page, page_size=page_size
     )
 
     base_url = str(request.base_url).rstrip("/") + "/api/events"
@@ -36,7 +36,6 @@ async def get_events(
 
     if page > 1:
         prev_url = build_url(base_url, page - 1, page_size, date_from)
-        
 
     return {
         "count": total,
@@ -58,23 +57,23 @@ async def get_events(
                 "number_of_visitors": e.number_of_visitors,
             }
             for e in events
-        ]
+        ],
     }
-    
+
+
 @router.get("/events/{event_id}/seats")
 async def get_event_seats(
-    event_id: str,
-    service: SeatsService = Depends(get_seats_service)
+    event_id: str, service: SeatsService = Depends(get_seats_service)
 ):
     try:
         result = await service.get_seats(event_id)
-        return result  
+        return result
     except EventNotFoundError as e:
         raise HTTPException(
             status_code=404,
             detail=str(e),
         ) from e
-    except EventNotPublishedError as e: 
+    except EventNotPublishedError as e:
         raise HTTPException(
             status_code=400,
             detail=str(e),
@@ -83,30 +82,28 @@ async def get_event_seats(
 
 @router.get("/events/{event_id}")
 async def get_event(
-    event_id: str,
-    service: EventsService = Depends(get_events_service)
+    event_id: str, service: EventsService = Depends(get_events_service)
 ):
     try:
         event = await service.get_event(event_id)
         return {
-        "id": event.id,
-        "name": event.name,
-        "place": {
-            "id": event.place_id,
-            "name": event.place_name,
-            "city": event.place_city,
-            "address": event.place_address,
-            "seats_pattern": event.place_seats_pattern,
-        },
-        "event_time": event.event_time,
-        "registration_deadline": event.registration_deadline,
-        "status": event.status,
-        "number_of_visitors": event.number_of_visitors,
-    }
+            "id": event.id,
+            "name": event.name,
+            "place": {
+                "id": event.place_id,
+                "name": event.place_name,
+                "city": event.place_city,
+                "address": event.place_address,
+                "seats_pattern": event.place_seats_pattern,
+            },
+            "event_time": event.event_time,
+            "registration_deadline": event.registration_deadline,
+            "status": event.status,
+            "number_of_visitors": event.number_of_visitors,
+        }
 
     except EventNotFoundError as e:
         raise HTTPException(
             status_code=404,
             detail=str(e),
         ) from e
-    

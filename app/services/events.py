@@ -1,5 +1,6 @@
 from app.exceptions import EventNotFoundError
 
+
 class EventsService:
     def __init__(self, repo):
         self.repo = repo
@@ -8,15 +9,13 @@ class EventsService:
         offset = (page - 1) * page_size
 
         events = await self.repo.get_events(
-            date_from=date_from,
-            limit=page_size,
-            offset=offset
+            date_from=date_from, limit=page_size, offset=offset
         )
 
         total = await self.repo.count_events(date_from)
 
         return events, total
-    
+
     async def get_event(self, event_id: str):
         event = await self.repo.get_event_by_id(event_id)
 

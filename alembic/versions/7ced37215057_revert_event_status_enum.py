@@ -8,9 +8,9 @@ Create Date: 2026-05-13 23:03:19.971134
 
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 
+from alembic import op
 
 revision: str = "7ced37215057"
 down_revision: Union[str, Sequence[str], None] = "9e1d1fb2cc2a"
@@ -39,11 +39,10 @@ def upgrade() -> None:
 def downgrade() -> None:
     # recreate enum
     event_status = sa.Enum(
-        "DRAFT",
-        "PUBLISHED",
-        "FINISHED",
-        "CANCELLED",
-        "REGISTRATION_CLOSED",
+        "published",
+        "new",
+        "finished",
+        "registration_closed",
         name=ENUM_NAME,
     )
 

@@ -1,9 +1,10 @@
-import pytest
 from unittest.mock import AsyncMock
-from httpx import AsyncClient, ASGITransport
 
-from app.main import app
+import pytest
+from httpx import ASGITransport, AsyncClient
+
 from app.deps import get_sync_usecase
+from app.main import app
 
 
 @pytest.mark.asyncio

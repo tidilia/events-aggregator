@@ -21,11 +21,7 @@ class OutboxRepository:
         return result.scalars().all()
 
     async def mark_sent(self, outbox_id: str):
-        stmt = (
-            update(Outbox)
-            .where(Outbox.id == outbox_id)
-            .values(status="sent")
-        )
+        stmt = update(Outbox).where(Outbox.id == outbox_id).values(status="sent")
 
         await self.session.execute(stmt)
         await self.session.commit()

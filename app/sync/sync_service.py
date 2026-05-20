@@ -1,6 +1,9 @@
 from datetime import datetime, timezone
-from app.sync.paginator import EventsPaginator
+
 from app.schemas.event import EventSchema
+from app.sync.paginator import EventsPaginator
+
+
 class SyncService:
     def __init__(self, client, repo, sync_fn):
         self.client = client
@@ -22,7 +25,6 @@ async def sync_events(client, events_repo, sync_repo):
         max_changed_at = last_changed_at
 
     paginator = EventsPaginator(client, changed_at)
-    
 
     async for raw_event in paginator:
         event = EventSchema.model_validate(raw_event)
@@ -36,6 +38,5 @@ async def sync_events(client, events_repo, sync_repo):
     # 2. обновляем метаданные
     if max_changed_at:
         await sync_repo.update_sync_metadata(
-            last_changed_at=max_changed_at,
-            sync_time=datetime.utcnow()
+            last_changed_at=max_changed_at, sync_time=datetime.utcnow()
         )

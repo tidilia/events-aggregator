@@ -1,6 +1,7 @@
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
-from sqlalchemy import select, func
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.event import Event as EventModel
 
 
@@ -21,7 +22,6 @@ class EventsRepository:
             changed_at=event.changed_at,
             created_at=event.created_at,
             status_changed_at=event.status_changed_at,
-
             place_id=place.id,
             place_name=place.name,
             place_city=place.city,
@@ -41,7 +41,6 @@ class EventsRepository:
                 "number_of_visitors": stmt.excluded.number_of_visitors,
                 "changed_at": stmt.excluded.changed_at,
                 "status_changed_at": stmt.excluded.status_changed_at,
-
                 "place_id": stmt.excluded.place_id,
                 "place_name": stmt.excluded.place_name,
                 "place_city": stmt.excluded.place_city,
@@ -49,12 +48,12 @@ class EventsRepository:
                 "place_seats_pattern": stmt.excluded.place_seats_pattern,
                 "place_changed_at": stmt.excluded.place_changed_at,
                 "place_created_at": stmt.excluded.place_created_at,
-            }
+            },
         )
 
         await self.session.execute(stmt)
         await self.session.commit()
-        
+
     async def get_events(self, date_from, limit, offset):
         stmt = select(EventModel)
 
@@ -66,13 +65,13 @@ class EventsRepository:
 
         result = await self.session.execute(stmt)
         return result.scalars().all()
-    
+
     async def get_event_by_id(self, event_id: str):
         stmt = select(EventModel).where(EventModel.id == event_id)
         result = await self.session.execute(stmt)
         event = result.scalar_one_or_none()
         return event
-    
+
     async def count_events(self, date_from):
         stmt = select(func.count(EventModel.id))
 

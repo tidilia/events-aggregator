@@ -1,5 +1,7 @@
-import httpx
 from urllib.parse import urljoin
+
+import httpx
+
 
 class CapashinoClient:
     def __init__(self, base_url: str, api_key: str, http_client: httpx.AsyncClient):
@@ -12,19 +14,16 @@ class CapashinoClient:
         payload = {
             "message": message,
             "reference_id": ticket_id,
-            "idempotency_key": ticket_id
+            "idempotency_key": ticket_id,
         }
 
-        headers = {
-            "X-API-Key": self.api_key,
-            "Content-Type": "application/json"
-        }
+        headers = {"X-API-Key": self.api_key, "Content-Type": "application/json"}
 
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 urljoin(self.base_url, "/api/notifications"),
                 json=payload,
-                headers=headers
+                headers=headers,
             )
 
         response.raise_for_status()

@@ -1,5 +1,7 @@
-from sqlalchemy import Column, String, JSON, DateTime, ForeignKey
+from sqlalchemy import JSON, Column, DateTime, ForeignKey, String
+
 from app.db.base import Base
+
 
 class Outbox(Base):
     __tablename__ = "outbox"

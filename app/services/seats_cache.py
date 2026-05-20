@@ -1,5 +1,6 @@
 import time
 
+
 class SeatsCache:
     def __init__(self):
         self.storage = {}

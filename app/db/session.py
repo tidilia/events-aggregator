@@ -1,12 +1,13 @@
 import os
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import AsyncGenerator
 
-DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
-if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace(
-        "postgres://", "postgresql+asyncpg://", 1)
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
+
+DATABASE_URL = "postgresql+asyncpg://events_user:1234@localhost:5432/events_db"
+# DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
+# if DATABASE_URL.startswith("postgres://"):
+#     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
 
 engine = create_async_engine(
     DATABASE_URL,

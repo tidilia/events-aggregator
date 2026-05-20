@@ -1,52 +1,97 @@
 """init
 
 Revision ID: ab93b174874b
-Revises: 
+Revises:
 Create Date: 2026-04-26 01:50:53.135222
 
 """
+
 from typing import Sequence, Union
 
-from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
+from alembic import op
+
 # revision identifiers, used by Alembic.
-revision: str = 'ab93b174874b'
+revision: str = "ab93b174874b"
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.create_table('sync_metadata',
-    sa.Column('id', sa.INTEGER(), autoincrement=True, nullable=False),
-    sa.Column('last_sync_time', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
-    sa.Column('last_changed_at', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
-    sa.Column('sync_status', sa.VARCHAR(), autoincrement=False, nullable=False),
-    sa.PrimaryKeyConstraint('id', name=op.f('sync_metadata_pkey'))
+    op.create_table(
+        "sync_metadata",
+        sa.Column("id", sa.INTEGER(), autoincrement=True, nullable=False),
+        sa.Column(
+            "last_sync_time",
+            postgresql.TIMESTAMP(),
+            autoincrement=False,
+            nullable=False,
+        ),
+        sa.Column(
+            "last_changed_at",
+            postgresql.TIMESTAMP(),
+            autoincrement=False,
+            nullable=False,
+        ),
+        sa.Column("sync_status", sa.VARCHAR(), autoincrement=False, nullable=False),
+        sa.PrimaryKeyConstraint("id", name=op.f("sync_metadata_pkey")),
     )
-    op.create_table('events',
-    sa.Column('id', sa.VARCHAR(), autoincrement=False, nullable=False),
-    sa.Column('name', sa.VARCHAR(), autoincrement=False, nullable=False),
-    sa.Column('event_time', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
-    sa.Column('registration_deadline', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
-    sa.Column('status', sa.VARCHAR(), autoincrement=False, nullable=False),
-    sa.Column('number_of_visitors', sa.INTEGER(), autoincrement=False, nullable=False),
-    sa.Column('changed_at', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
-    sa.Column('created_at', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
-    sa.Column('status_changed_at', postgresql.TIMESTAMP(), autoincrement=False, nullable=False),
-    sa.Column('place_id', sa.VARCHAR(), autoincrement=False, nullable=True),
-    sa.Column('place_name', sa.VARCHAR(), autoincrement=False, nullable=True),
-    sa.Column('place_city', sa.VARCHAR(), autoincrement=False, nullable=True),
-    sa.Column('place_address', sa.VARCHAR(), autoincrement=False, nullable=True),
-    sa.Column('place_seats_pattern', sa.VARCHAR(), autoincrement=False, nullable=True),
-    sa.Column('place_changed_at', postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
-    sa.Column('place_created_at', postgresql.TIMESTAMP(), autoincrement=False, nullable=True),
-    sa.PrimaryKeyConstraint('id', name=op.f('events_pkey'))
+    op.create_table(
+        "events",
+        sa.Column("id", sa.VARCHAR(), autoincrement=False, nullable=False),
+        sa.Column("name", sa.VARCHAR(), autoincrement=False, nullable=False),
+        sa.Column(
+            "event_time", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
+        ),
+        sa.Column(
+            "registration_deadline",
+            postgresql.TIMESTAMP(),
+            autoincrement=False,
+            nullable=False,
+        ),
+        sa.Column("status", sa.VARCHAR(), autoincrement=False, nullable=False),
+        sa.Column(
+            "number_of_visitors", sa.INTEGER(), autoincrement=False, nullable=False
+        ),
+        sa.Column(
+            "changed_at", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
+        ),
+        sa.Column(
+            "created_at", postgresql.TIMESTAMP(), autoincrement=False, nullable=False
+        ),
+        sa.Column(
+            "status_changed_at",
+            postgresql.TIMESTAMP(),
+            autoincrement=False,
+            nullable=False,
+        ),
+        sa.Column("place_id", sa.VARCHAR(), autoincrement=False, nullable=True),
+        sa.Column("place_name", sa.VARCHAR(), autoincrement=False, nullable=True),
+        sa.Column("place_city", sa.VARCHAR(), autoincrement=False, nullable=True),
+        sa.Column("place_address", sa.VARCHAR(), autoincrement=False, nullable=True),
+        sa.Column(
+            "place_seats_pattern", sa.VARCHAR(), autoincrement=False, nullable=True
+        ),
+        sa.Column(
+            "place_changed_at",
+            postgresql.TIMESTAMP(),
+            autoincrement=False,
+            nullable=True,
+        ),
+        sa.Column(
+            "place_created_at",
+            postgresql.TIMESTAMP(),
+            autoincrement=False,
+            nullable=True,
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("events_pkey")),
     )
     # ### end Alembic commands ###
-    
+
+
 def downgrade() -> None:
-    op.drop_table('events')
-    op.drop_table('sync_metadata')
+    op.drop_table("events")
+    op.drop_table("sync_metadata")

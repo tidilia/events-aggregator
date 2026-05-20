@@ -1,5 +1,7 @@
-import httpx
 from urllib.parse import urljoin
+
+import httpx
+
 
 class EventsProviderClient:
     def __init__(self, base_url: str, api_key: str, http_client: httpx.AsyncClient):
@@ -8,51 +10,39 @@ class EventsProviderClient:
         self.http_client = http_client
 
     async def events(self, changed_at: str, cursor: str | None = None):
-        params = {
-            "changed_at": changed_at
-        }
+        params = {"changed_at": changed_at}
 
         if cursor:
             params["cursor"] = cursor
 
-        headers = {
-            "x-api-key": self.api_key
-        }
+        headers = {"x-api-key": self.api_key}
 
         response = await self.http_client.get(
-            self.base_url,
-            params=params,
-            headers=headers
+            self.base_url, params=params, headers=headers
         )
 
         response.raise_for_status()
         return response.json()
-    
 
     async def event_seats(self, event_id: str):
-        headers = {
-                "x-api-key": self.api_key
-            }
-    
+        headers = {"x-api-key": self.api_key}
+
         response = await self.http_client.get(
-            urljoin(self.base_url, f"{event_id}/seats/"),
-            headers=headers
+            urljoin(self.base_url, f"{event_id}/seats/"), headers=headers
         )
         response.raise_for_status()
-        
+
         result = response.json()
         return result.get("seats")
-    
+
     async def register(self, event_id: str, payload: dict):
-        headers = {
-                "x-api-key": self.api_key
-            }
-        
+        headers = {"x-api-key": self.api_key}
+
         try:
             response = await self.http_client.post(
                 urljoin(self.base_url, f"{event_id}/register/"),
                 json=payload,
-                headers=headers
+                headers=headers,
             )
             response.raise_for_status()
             return response.json()
@@ -63,16 +53,11 @@ class EventsProviderClient:
         except httpx.RequestError as e:
             print("NETWORK ERROR:", str(e))
             raise
-        
-        # print(response)
-        # response.raise_for_status()
-        
-        # return response.json()
-    
+
     async def unregister(self, event_id: str, ticket_id: str):
         await self.http_client.request(
             "DELETE",
             urljoin(self.base_url, f"{event_id}/unregister/"),
             json={"ticket_id": ticket_id},
-            headers={"x-api-key": self.api_key}
+            headers={"x-api-key": self.api_key},
         )

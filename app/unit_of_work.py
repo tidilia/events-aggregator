@@ -1,7 +1,7 @@
 from app.db.session import SessionLocal
 from app.repositories.events import EventsRepository
-from app.repositories.sync import SyncRepository
 from app.repositories.outbox import OutboxRepository
+from app.repositories.sync import SyncRepository
 
 
 class UnitOfWork:

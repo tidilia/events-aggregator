@@ -86,7 +86,6 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-
 from app.db.base import Base
 
 # Alembic config
@@ -101,8 +100,7 @@ target_metadata = Base.metadata
 DATABASE_URL = os.getenv("POSTGRES_CONNECTION_STRING")
 
 if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace(
-        "postgres://", "postgresql+asyncpg://", 1)
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
 
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
@@ -125,7 +123,7 @@ def do_run_migrations(connection: Connection) -> None:
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
-        compare_type=True, 
+        compare_type=True,
     )
 
     with context.begin_transaction():
@@ -143,6 +141,7 @@ async def run_migrations_online() -> None:
         await connection.run_sync(do_run_migrations)
 
     await connectable.dispose()
+
 
 if context.is_offline_mode():
     run_migrations_offline()

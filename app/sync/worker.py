@@ -1,4 +1,5 @@
 import asyncio
+
 from app.sync.sync_service import sync_events
 from app.unit_of_work import UnitOfWork
 
@@ -14,4 +15,3 @@ async def sync_loop(client):
             await uow.close()
 
         await asyncio.sleep(60 * 60 * 24)
-        
