@@ -8,11 +8,11 @@ from app.metrics import http_request_duration_seconds, http_requests_total
 
 class MetricsMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        start = time.time()
+        start = time.monotonic()
 
         response = await call_next(request)
 
-        duration = time.time() - start
+        duration = time.monotonic() - start
 
         method = request.method
         endpoint = request.url.path

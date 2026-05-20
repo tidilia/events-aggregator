@@ -14,7 +14,7 @@ class EventsProviderClient:
         self.http_client = http_client
 
     async def _request(self, method: str, url: str, endpoint_label: str, **kwargs):
-        start = time.time()
+        start = time.monotonic()
         status = "error"
 
         try:
@@ -28,7 +28,7 @@ class EventsProviderClient:
             raise
 
         finally:
-            duration = time.time() - start
+            duration = time.monotonic() - start
 
             events_provider_request_duration_seconds.labels(
                 endpoint=endpoint_label
