@@ -93,6 +93,7 @@ class TicketsService:
             raise TicketNotFoundError(ticket_id)
 
         await self.client.unregister(ticket.event_id, ticket_id)
-        await self.tickets_repo.delete(ticket_id)
+        await self.tickets_repo.cancel(ticket_id)
+        # await self.tickets_repo.delete(ticket_id)
 
         return {"success": True}

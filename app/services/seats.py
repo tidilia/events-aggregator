@@ -1,4 +1,5 @@
 from app.exceptions import EventNotFoundError, EventNotPublishedError
+from app.metrics import cache_hits_total, cache_misses_total
 from app.models.enums import EventStatus
 from app.services.seats_cache import seats_cache
 
@@ -19,9 +20,11 @@ class SeatsService:
 
         cached = seats_cache.get(event_id)
         if cached:
+            cache_hits_total.inc()
             return {"event_id": event_id, "available_seats": cached}
 
         data = await self.client.event_seats(event_id)
         result = {"event_id": event_id, "available_seats": data}
         seats_cache.set(event_id, data, ttl=30)
+        cache_misses_total.inc()
         return result

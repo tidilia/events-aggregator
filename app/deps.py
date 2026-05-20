@@ -10,6 +10,7 @@ from app.repositories.sync import SyncRepository
 from app.repositories.tickets import TicketsRepository
 from app.repositories.users import UsersRepository
 from app.services.events import EventsService
+from app.services.metrics import MetricsService
 from app.services.seats import SeatsService
 from app.services.tickets import TicketsService
 from app.sync.sync_service import SyncService, sync_events
@@ -27,25 +28,25 @@ def get_events_client() -> EventsProviderClient:
     )
 
 
-def get_events_repository(
+def get_events_repo(
     db: AsyncSession = Depends(get_db),
 ) -> EventsRepository:
     return EventsRepository(db)
 
 
-def get_sync_repository(
+def get_sync_repo(
     db: AsyncSession = Depends(get_db),
 ) -> SyncRepository:
     return SyncRepository(db)
 
 
-def get_tickets_repository(
+def get_tickets_repo(
     db: AsyncSession = Depends(get_db),
 ) -> TicketsRepository:
     return TicketsRepository(db)
 
 
-def get_users_repository(
+def get_users_repo(
     db: AsyncSession = Depends(get_db),
 ) -> UsersRepository:
     return UsersRepository(db)
@@ -53,8 +54,8 @@ def get_users_repository(
 
 def get_sync_service(
     client: EventsProviderClient = Depends(get_events_client),
-    events_repo: EventsRepository = Depends(get_events_repository),
-    sync_repo: SyncRepository = Depends(get_sync_repository),
+    events_repo: EventsRepository = Depends(get_events_repo),
+    sync_repo: SyncRepository = Depends(get_sync_repo),
 ) -> SyncService:
     return SyncService(
         client=client,
@@ -90,7 +91,14 @@ def get_tickets_service(
     events_repo: EventsRepository = Depends(get_events_repo),
     client: EventsProviderClient = Depends(get_events_client),
     seats_service: SeatsService = Depends(get_seats_service),
-    users_repo: UsersRepository = Depends(get_users_repository),
-    tickets_repo: TicketsRepository = Depends(get_tickets_repository),
+    users_repo: UsersRepository = Depends(get_users_repo),
+    tickets_repo: TicketsRepository = Depends(get_tickets_repo),
 ) -> TicketsService:
     return TicketsService(seats_service, client, events_repo, users_repo, tickets_repo)
+
+
+def get_metrics_service(
+    tickets_repo: TicketsRepository = Depends(get_tickets_repo),
+    events_repo: EventsRepository = Depends(get_events_repo),
+) -> MetricsService:
+    return MetricsService(tickets_repo, events_repo)

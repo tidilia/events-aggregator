@@ -80,3 +80,9 @@ class EventsRepository:
 
         result = await self.session.execute(stmt)
         return result.scalar()
+
+    async def count_all(self) -> int:
+        result = await self.session.execute(
+            select(func.count()).select_from(EventModel)
+        )
+        return result.scalar_one()

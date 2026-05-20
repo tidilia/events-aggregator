@@ -16,5 +16,6 @@ class Ticket(Base):
     user = relationship("User")
     seat = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), default=datetime.now(timezone.utc))
+    status = Column(String, nullable=False, default="created")
 
     __table_args__ = (UniqueConstraint("event_id", "seat", name="uq_event_seat"),)

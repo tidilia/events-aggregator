@@ -1,6 +1,10 @@
+import time
 from urllib.parse import urljoin
 
 import httpx
+
+from app.metrics import (events_provider_request_duration_seconds,
+                         events_provider_requests_total)
 
 
 class EventsProviderClient:
@@ -8,6 +12,32 @@ class EventsProviderClient:
         self.base_url = base_url
         self.api_key = api_key
         self.http_client = http_client
+
+    async def _request(self, method: str, url: str, endpoint_label: str, **kwargs):
+        start = time.time()
+        status = "error"
+
+        try:
+            response = await self.http_client.request(method, url, **kwargs)
+            status = str(response.status_code)
+
+            response.raise_for_status()
+            return response
+
+        except Exception:
+            raise
+
+        finally:
+            duration = time.time() - start
+
+            events_provider_request_duration_seconds.labels(
+                endpoint=endpoint_label
+            ).observe(duration)
+
+            events_provider_requests_total.labels(
+                endpoint=endpoint_label,
+                status=status,
+            ).inc()
 
     async def events(self, changed_at: str, cursor: str | None = None):
         params = {"changed_at": changed_at}
@@ -17,34 +47,38 @@ class EventsProviderClient:
 
         headers = {"x-api-key": self.api_key}
 
-        response = await self.http_client.get(
-            self.base_url, params=params, headers=headers
+        response = await self._request(
+            "GET",
+            self.base_url,
+            endpoint_label="/events",
+            params=params,
+            headers=headers,
         )
-
-        response.raise_for_status()
         return response.json()
 
     async def event_seats(self, event_id: str):
         headers = {"x-api-key": self.api_key}
 
-        response = await self.http_client.get(
-            urljoin(self.base_url, f"{event_id}/seats/"), headers=headers
+        response = await self._request(
+            "GET",
+            urljoin(self.base_url, f"{event_id}/seats/"),
+            endpoint_label="/seats",
+            headers=headers,
         )
-        response.raise_for_status()
 
-        result = response.json()
-        return result.get("seats")
+        return response.json().get("seats")
 
     async def register(self, event_id: str, payload: dict):
         headers = {"x-api-key": self.api_key}
 
         try:
-            response = await self.http_client.post(
+            response = await self._request(
+                "POST",
                 urljoin(self.base_url, f"{event_id}/register/"),
+                endpoint_label="/registration",
                 json=payload,
                 headers=headers,
             )
-            response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
             print("EVENTS PROVIDER ERROR:", e.response.text)

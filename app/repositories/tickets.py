@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -28,6 +28,12 @@ class TicketsRepository:
             await self.session.delete(ticket)
             await self.session.commit()
 
+    async def cancel(self, ticket_id: str):
+        ticket = await self.get(ticket_id)
+        if ticket:
+            ticket.status = "cancelled"
+            await self.session.commit()
+
     async def get_by_idempotency_key_with_user(self, key: str):
         result = await self.session.execute(
             select(Ticket)
@@ -36,3 +42,13 @@ class TicketsRepository:
         )
 
         return result.scalar_one_or_none()
+
+    async def count_all(self) -> int:
+        result = await self.session.execute(select(func.count()).select_from(Ticket))
+        return result.scalar_one()
+
+    async def count_cancelled(self) -> int:
+        result = await self.session.execute(
+            select(func.count()).select_from(Ticket).where(Ticket.status == "cancelled")
+        )
+        return result.scalar_one()

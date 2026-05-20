@@ -8,11 +8,13 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 
+from app.api.metrics import metrics_router
 from app.api.router import api_router
 from app.clients.capashino import CapashinoClient
 from app.clients.events_provider import EventsProviderClient
 from app.config import (CAPASHINO_URL, EVENTS_PROVIDER_URL, LMS_API_KEY,
                         SENTRY_DSN)
+from app.middleware.metrics import MetricsMiddleware
 from app.sync.worker import sync_loop
 from app.workers.outbox import outbox_worker
 
@@ -50,6 +52,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(api_router, prefix="/api")
+app.include_router(metrics_router)
+app.add_middleware(MetricsMiddleware)
 
 
 @app.exception_handler(RequestValidationError)
